@@ -25,20 +25,15 @@ public class Sorting extends JPanel  implements Printable {
     private QuickSort quickSort;
     private int delay;
 
-    public void setRunning(Boolean isRunning){
-        this.isRunning = isRunning;
-    }
+    public Sorting(){
+        setPreferredSize(new Dimension(1000, 600));
 
-    public Boolean getRunning(){
-        return isRunning;
-    }
+        setBackground(Color.WHITE);
 
-    public void setDelay(int delay){
-        this.delay = delay;
-    }
-
-    public void setsortAlgorithm(String sortAlgorithm){
-        this.sortAlgorithm = sortAlgorithm;
+        bubbleSort = new BubbleSort(array);
+        selectionSort = new SelectionSort(array);
+        insertionSort = new InsertionSort(array);
+        quickSort = new QuickSort(array);
     }
 
     public void reset(){
@@ -77,15 +72,20 @@ public class Sorting extends JPanel  implements Printable {
         repaint();
     }
 
-    public Sorting(){
-        setPreferredSize(new Dimension(1000, 600));
+    public void setRunning(Boolean isRunning){
+        this.isRunning = isRunning;
+    }
 
-        setBackground(Color.WHITE);
+    public Boolean getRunning(){
+        return isRunning;
+    }
 
-        bubbleSort = new BubbleSort(array);
-        selectionSort = new SelectionSort(array);
-        insertionSort = new InsertionSort(array);
-        quickSort = new QuickSort(array);
+    public void setDelay(int delay){
+        this.delay = delay;
+    }
+
+    public void setsortAlgorithm(String sortAlgorithm){
+        this.sortAlgorithm = sortAlgorithm;
     }
 
     public void animate() {

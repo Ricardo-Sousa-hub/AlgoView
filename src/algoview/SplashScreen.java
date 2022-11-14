@@ -5,10 +5,7 @@ import sun.font.FontFamily;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -27,21 +24,10 @@ public class SplashScreen extends JFrame {
         JPanel panel = new SplashPanel();
         splashFrame.add(panel, BorderLayout.CENTER);
 
-        JButton btn = new JButton("OK");
-        splashFrame.add(btn, BorderLayout.SOUTH);
-
         splashFrame.pack();
         splashFrame.setLocationRelativeTo(null); // Set location to the center of screen
 
         splashFrame.setVisible(true); // Set visibility
-
-        btn.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createApplicationFrame();
-            }
-        });
 
         panel.addMouseListener(new MouseListener() {
 
@@ -108,4 +94,5 @@ class SplashPanel extends JPanel {
         g2.setFont(f);
         g2.drawString("AlgoView", (getWidth()-100)/2, getHeight()/2);
     }
+
 }

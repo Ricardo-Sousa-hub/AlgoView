@@ -103,6 +103,21 @@ public class Main extends JFrame implements ActionListener {
         menuItem.addActionListener(this);
         menu.add(menuItem);
 
+        menuBar.add(menu);
+
+        menu = new JMenu("Maze");
+        menuItem = new JMenuItem("Generate Maze");
+        //Adicionar opção ao menu
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+
+        menuBar.add(menu);
+
+        menu = new JMenu("Sort");
+        menuItem = new JMenuItem("Sort");
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+
         //Adicionar menu a menu bar
         menuBar.add(menu);
     }
@@ -134,6 +149,12 @@ public class Main extends JFrame implements ActionListener {
                     ex.printStackTrace();
                 }
             }
+        }
+        else if(e.getActionCommand().equals("Generate Maze")){
+            panelSorting.setVisible(false);
+        }
+        else if(e.getActionCommand().equals("Sort")){
+            panelSorting.setVisible(true);
         }
     }
 
