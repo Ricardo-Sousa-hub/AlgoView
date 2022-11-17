@@ -11,6 +11,7 @@ public class QuickSort {
         stack = new int[array.length];
         low = 0;
         high = array.length-1;
+        System.out.println(high);
         array_index = 0;
         compare_index = 0;
         x = 0;
@@ -31,7 +32,7 @@ public class QuickSort {
         // keep popping elements until stack is not empty
         if (sp >= 0) {
 
-            if (isPartioning == false) {
+            if (!isPartioning) {
                 high = stack[sp--];
                 low = stack[sp];
                 array_index = low - 1;

@@ -27,34 +27,32 @@ public class Main extends JFrame implements ActionListener {
     JFileChooser fileChooser = new JFileChooser();
 
     Sorting panelSorting = new Sorting();
+    Maze panelMaze = new Maze();
 
     String[] algoritmos = {"Bubble Sort", "Selection Sort", "Insertion Sort", "Quick Sort"};
 
     PrinterJob pj;
 
-    public void main() { //mudar nome da função
-        JFrame frame = new Main();
-        frame.setPreferredSize(new Dimension(1280, 720));
-        frame.setTitle("AlgoView");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
+    public Main() { //mudar nome da função
+        setPreferredSize(new Dimension(1280, 720));
+        setTitle("AlgoView");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack();
 
-        frame.setVisible(true);
+        setVisible(true);
 
-        centerWindow(frame);
-    }
-
-    public Main()
-    {
         pj = PrinterJob.getPrinterJob();
         criarMenuBarEContainer();
     }
+
 
     private void criarMenuBarEContainer() {
 
         Container cp = this.getContentPane();
         cp.setLayout(new FlowLayout());
         cp.add(panelSorting);
+        cp.add(panelMaze);
+        panelMaze.setVisible(false);
 
         JComboBox listaAlgoritmos = new JComboBox(algoritmos);
         panelSorting.add(listaAlgoritmos);
@@ -122,13 +120,6 @@ public class Main extends JFrame implements ActionListener {
         menuBar.add(menu);
     }
 
-    private static void centerWindow(Window frame) {
-        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-        frame.setLocation(x, y);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Exit")) {
@@ -152,8 +143,10 @@ public class Main extends JFrame implements ActionListener {
         }
         else if(e.getActionCommand().equals("Generate Maze")){
             panelSorting.setVisible(false);
+            panelMaze.setVisible(true);
         }
         else if(e.getActionCommand().equals("Sort")){
+            panelMaze.setVisible(false);
             panelSorting.setVisible(true);
         }
     }

@@ -57,9 +57,16 @@ public class SplashScreen extends JFrame {
 
     public static void createApplicationFrame() {
         // Dispose the splash screen frame
-        Main main = new Main();
-        main.main();
+        JFrame main = new Main();
+        centerWindow(main);
         splashFrame.dispose();
+    }
+
+    private static void centerWindow(Window frame) {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+        frame.setLocation(x, y);
     }
 }
 
