@@ -2,6 +2,8 @@ package algoview;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -14,14 +16,16 @@ public class Maze extends JPanel {
     private Cell[][] celulas = new Cell[qtdCellY][qtdCellX];
 
     ArrayList<Cell> stack = new ArrayList<>();
+    private MazeCreator mazeCreator;
+    private boolean isRunning = false;
     public Maze(){
         setPreferredSize(new Dimension(1001, 601));
         setBackground(Color.WHITE);
-
         preencherLbirinto();
+        mazeCreator = new MazeCreator(celulas, qtdCellX);
     }
 
-    private void preencherLbirinto(){
+    public void preencherLbirinto(){
         int posX = 0;
         int posY = 0;
         for(int y = 0; y < qtdCellY; y++){
@@ -56,22 +60,43 @@ public class Maze extends JPanel {
 
     }
 
-    private boolean celulasPorVisitar(){
+    public boolean celulasVisitadas(){
         for (Cell[] c: celulas) {
             for(Cell c1: c){
                 if(!c1.isVisitada()){
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
 
 
     public void gerarLabirinto(){
+        mazeCreator.setRunning(true);
+        mazeCreator.setRun_start(0);
+        Timer gerarLabirinto = new Timer(50, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(celulasVisitadas() || !isRunning){
+                    mazeCreator.setRunning(false);
+                    isRunning = false;
+                    ((Timer)e.getSource()).stop();
+                }
+                else
+                {
+                    if(isRunning){
+                        celulas = mazeCreator.createOnlyOneCell();
+                    }
+                }
+                repaint();
+            }
+        });
+        gerarLabirinto.start();
 
-        for(int y = 0; y < qtdCellY; y++){
+        //Codigo anterior
+        /*for(int y = 0; y < qtdCellY; y++){
             int run_start = 0;
             for (int x = 0; x < qtdCellX; x++){
                 Random r = new Random();
@@ -93,7 +118,7 @@ public class Maze extends JPanel {
             }
         }
 
-        repaint();
+        repaint();*/
 
     }
 
@@ -110,4 +135,11 @@ public class Maze extends JPanel {
         return  arr;
     }
 
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
+    }
 }

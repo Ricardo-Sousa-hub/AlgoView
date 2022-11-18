@@ -151,7 +151,14 @@ public class Main extends JFrame implements ActionListener {
             panelMaze.setVisible(true);
         }
         else if(e.getActionCommand().equals("Generate Maze")){
-            panelMaze.gerarLabirinto();
+            if(!panelMaze.celulasVisitadas()){
+                panelMaze.setRunning(true);
+                panelMaze.gerarLabirinto();
+            }
+            else{
+                panelMaze.preencherLbirinto();
+                panelMaze.gerarLabirinto();
+            }
         }
         else if(e.getActionCommand().equals("Sort")){
             panelMaze.setVisible(false);
