@@ -3,6 +3,7 @@ package algoview;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Maze extends JPanel {
 
@@ -14,9 +15,26 @@ public class Maze extends JPanel {
 
     ArrayList<Cell> stack = new ArrayList<>();
     public Maze(){
-        setPreferredSize(new Dimension(1000, 600));
+        setPreferredSize(new Dimension(1001, 601));
         setBackground(Color.WHITE);
 
+        preencherLbirinto();
+    }
+
+    private void preencherLbirinto(){
+        int posX = 0;
+        int posY = 0;
+        for(int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                Cell cell = new Cell(posX, posY, CELL_SIZE, CELL_SIZE);
+
+                celulas[y][x] = cell;
+
+                posX += CELL_SIZE;
+            }
+            posY += CELL_SIZE;
+            posX = 0;
+        }
     }
 
     @Override
@@ -29,38 +47,10 @@ public class Maze extends JPanel {
     }
 
     private void buildBoard(Graphics2D g2){
-        int posX = 0;
-        int posY = 0;
-        for(int y = 0; y < qtdCellY; y++){
-            for (int x = 0; x < qtdCellX; x++){
-                Cell cell = new Cell(posX, posY, CELL_SIZE, CELL_SIZE);
-                cell.drawCell(g2);
 
-                celulas[y][x] = cell;
-
-                posX += CELL_SIZE;
-            }
-            posY += CELL_SIZE;
-            posX = 0;
-        }
-
-        //add vizinhos
-        for(int y = 0; y < qtdCellY; y++){
-            for (int x = 0; x < qtdCellX; x++){
-
-                if(y > 0){ //parede cima
-                    celulas[y][x].addItemToVizinhos(celulas[y-1][x], 0);
-                }
-                if(x < qtdCellX-1){ //parede direita
-                    celulas[y][x].addItemToVizinhos(celulas[y][x+1], 1);
-                }
-                if(y < qtdCellY-1){ //parede baixo
-                    celulas[y][x].addItemToVizinhos(celulas[y+1][x], 2);
-
-                }
-                if(x > 0){ //parede esquerdo
-                    celulas[y][x].addItemToVizinhos(celulas[y][x], 3);
-                }
+        for(int y = 0; y < qtdCellY; y++) {
+            for (int x = 0; x < qtdCellX; x++) {
+                celulas[y][x].drawCell(g2);
             }
         }
 
@@ -77,26 +67,29 @@ public class Maze extends JPanel {
         return false;
     }
 
+
+
     public void gerarLabirinto(){
 
-        Cell currentCell = celulas[0][0];
-        currentCell.setVisitada(true);
-        int stackIndex = 1;
-
-        while (celulasPorVisitar()){
-            if(currentCell.temVizinhosPorVisitar()){
-                stack.add(currentCell);
-                stackIndex++;
-                Cell chosenCell = currentCell.randomVizinho();
-                chosenCell.removerParedeEntreCelulas(currentCell, chosenCell);
-                celulas[getIndex(currentCell)[0]][getIndex(currentCell)[1]] = currentCell;
-                currentCell = chosenCell;
-                currentCell.setVisitada(true);
-                celulas[getIndex(currentCell)[0]][getIndex(currentCell)[1]] = currentCell;
-            }
-            else if(!stack.isEmpty()){
-                currentCell = stack.get(stackIndex);
-                stackIndex--;
+        for(int y = 0; y < qtdCellY; y++){
+            int run_start = 0;
+            for (int x = 0; x < qtdCellX; x++){
+                Random r = new Random();
+                if(y > 0 && (x+1 == qtdCellX || r.nextInt(2) == 0)){
+                    int cell = run_start + r.nextInt(x-run_start+1);
+                    celulas[y][cell].setVisitada(true);
+                    celulas[y][cell].setParedeCima(false);
+                    celulas[y-1][cell].setVisitada(true);
+                    celulas[y-1][cell].setParedeBaixo(false);
+                    run_start = x + 1;
+                }
+                else if(x+1 < qtdCellX)
+                {
+                    celulas[y][x].setVisitada(true);
+                    celulas[y][x].setParedeDir(false);
+                    celulas[y][x+1].setVisitada(true);
+                    celulas[y][x+1].setParedeEsq(false);
+                }
             }
         }
 

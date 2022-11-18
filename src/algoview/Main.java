@@ -84,16 +84,6 @@ public class Main extends JFrame implements ActionListener {
 
         panelSorting.add(reset);
 
-        JButton gerarMaze = new JButton("Gerar labirinto");
-        gerarMaze.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                panelMaze.gerarLabirinto();
-            }
-        });
-
-        panelMaze.add(gerarMaze);
-
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
@@ -114,6 +104,11 @@ public class Main extends JFrame implements ActionListener {
         menuBar.add(menu);
 
         menu = new JMenu("Maze");
+        menuItem = new JMenuItem("Generate Maze Board");
+        //Adicionar opção ao menu
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+
         menuItem = new JMenuItem("Generate Maze");
         //Adicionar opção ao menu
         menuItem.addActionListener(this);
@@ -151,9 +146,12 @@ public class Main extends JFrame implements ActionListener {
                 }
             }
         }
-        else if(e.getActionCommand().equals("Generate Maze")){
+        else if(e.getActionCommand().equals("Generate Maze Board")){
             panelSorting.setVisible(false);
             panelMaze.setVisible(true);
+        }
+        else if(e.getActionCommand().equals("Generate Maze")){
+            panelMaze.gerarLabirinto();
         }
         else if(e.getActionCommand().equals("Sort")){
             panelMaze.setVisible(false);
