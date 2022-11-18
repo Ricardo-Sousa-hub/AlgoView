@@ -196,4 +196,23 @@ public class Cell extends Rectangle {
     public void setParedeCima(boolean paredeCima) {
         this.paredeCima = paredeCima;
     }
+
+    public void removerParedeEntreCelulas(Cell currentCell, Cell nextCell){
+        if(currentCell.getX() == nextCell.getX()-25){
+            currentCell.setParedeEsq(false);
+            nextCell.setParedeDir(false);
+        }
+        if(currentCell.getX() == nextCell.getX()+25){
+            currentCell.setParedeDir(false);
+            currentCell.setParedeEsq(false);
+        }
+        if(currentCell.getY() == nextCell.getY()-25){
+            currentCell.setParedeCima(false);
+            nextCell.setParedeBaixo(false);
+        }
+        if(currentCell.getY() == nextCell.getY()+25){
+            currentCell.setParedeBaixo(false);
+            currentCell.setParedeCima(false);
+        }
+    }
 }

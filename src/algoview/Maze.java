@@ -80,17 +80,41 @@ public class Maze extends JPanel {
     public void gerarLabirinto(){
 
         Cell currentCell = celulas[0][0];
+        currentCell.setVisitada(true);
+        int stackIndex = 1;
 
         while (celulasPorVisitar()){
             if(currentCell.temVizinhosPorVisitar()){
                 stack.add(currentCell);
+                stackIndex++;
                 Cell chosenCell = currentCell.randomVizinho();
-                
+                chosenCell.removerParedeEntreCelulas(currentCell, chosenCell);
+                celulas[getIndex(currentCell)[0]][getIndex(currentCell)[1]] = currentCell;
+                currentCell = chosenCell;
+                currentCell.setVisitada(true);
+                celulas[getIndex(currentCell)[0]][getIndex(currentCell)[1]] = currentCell;
+            }
+            else if(!stack.isEmpty()){
+                currentCell = stack.get(stackIndex);
+                stackIndex--;
             }
         }
 
         repaint();
 
+    }
+
+    public int[] getIndex(Cell cell){
+        int arr[] = new int[2];
+        for (int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                if(celulas[y][x] == cell){
+                    arr[0] = y;
+                    arr[1] = x;
+                }
+            }
+        }
+        return  arr;
     }
 
 }
