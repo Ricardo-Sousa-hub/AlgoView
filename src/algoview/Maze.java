@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -18,6 +20,7 @@ public class Maze extends JPanel {
     ArrayList<Cell> stack = new ArrayList<>();
     private MazeCreator mazeCreator;
     private boolean isRunning = false;
+    private boolean hasStartingPoint = false;
     public Maze(){
         setPreferredSize(new Dimension(1001, 601));
         setBackground(Color.WHITE);
@@ -26,6 +29,7 @@ public class Maze extends JPanel {
     }
 
     public void preencherLbirinto(){
+        hasStartingPoint = false;
         int posX = 0;
         int posY = 0;
         for(int y = 0; y < qtdCellY; y++){
@@ -39,6 +43,7 @@ public class Maze extends JPanel {
             posY += CELL_SIZE;
             posX = 0;
         }
+        repaint();
     }
 
     @Override
@@ -51,7 +56,6 @@ public class Maze extends JPanel {
     }
 
     private void buildBoard(Graphics2D g2){
-
         for(int y = 0; y < qtdCellY; y++) {
             for (int x = 0; x < qtdCellX; x++) {
                 celulas[y][x].drawCell(g2);
@@ -76,7 +80,8 @@ public class Maze extends JPanel {
     public void gerarLabirinto(){
         mazeCreator.setRunning(true);
         mazeCreator.setRun_start(0);
-        Timer gerarLabirinto = new Timer(50, new ActionListener() {
+        mazeCreator.reset(celulas);
+        Timer gerarLabirinto = new Timer(1, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(celulasVisitadas() || !isRunning){
@@ -141,5 +146,24 @@ public class Maze extends JPanel {
 
     public void setRunning(boolean running) {
         isRunning = running;
+    }
+
+    public boolean isHasStartingPoint() {
+        return hasStartingPoint;
+    }
+
+    public void setHasStartingPoint(boolean hasStartingPoint) {
+        this.hasStartingPoint = hasStartingPoint;
+    }
+
+    public void selecionarCelulaStart(int posX, int posY){
+        for (int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                if(celulas[y][x].contains(posY, posX)){
+                    celulas[x][y].setStart(true);
+                    repaint();
+                }
+            }
+        }
     }
 }

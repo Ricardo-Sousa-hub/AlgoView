@@ -8,6 +8,8 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.RenderedImage;
@@ -114,6 +116,11 @@ public class Main extends JFrame implements ActionListener {
         menuItem.addActionListener(this);
         menu.add(menuItem);
 
+        menuItem = new JMenuItem("Selecionar Inicio");
+        //Adicionar opção ao menu
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+
         menuBar.add(menu);
 
         menu = new JMenu("Sort");
@@ -149,6 +156,7 @@ public class Main extends JFrame implements ActionListener {
         else if(e.getActionCommand().equals("Generate Maze Board")){
             panelSorting.setVisible(false);
             panelMaze.setVisible(true);
+            panelMaze.preencherLbirinto();
         }
         else if(e.getActionCommand().equals("Generate Maze")){
             if(!panelMaze.celulasVisitadas()){
@@ -157,8 +165,40 @@ public class Main extends JFrame implements ActionListener {
             }
             else{
                 panelMaze.preencherLbirinto();
+                panelMaze.setRunning(true);
                 panelMaze.gerarLabirinto();
             }
+        }
+        else if(e.getActionCommand().equals("Selecionar Inicio")){
+            panelMaze.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if(!panelMaze.isHasStartingPoint()){
+                        panelMaze.selecionarCelulaStart(e.getX(), e.getY());
+                        panelMaze.setHasStartingPoint(true);
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+
+                }
+            });
         }
         else if(e.getActionCommand().equals("Sort")){
             panelMaze.setVisible(false);

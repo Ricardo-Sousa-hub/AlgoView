@@ -50,13 +50,13 @@ public class Cell extends Rectangle {
         if(visitada){
             g2.setColor(Color.WHITE);
         }
-        else if(start){
+        if(start){
             g2.setColor(Color.GREEN);
         }
-        else if(end){
+        if(end){
             g2.setColor(Color.RED);
         }
-        else{
+        if(!visitada){
             g2.setColor(color);
         }
 
@@ -86,7 +86,6 @@ public class Cell extends Rectangle {
     }
 
     public void drawCell(Graphics2D g2){
-
         desenharInteriorCelula(color, g2);
 
         desenharParedesCelula(Color.BLACK, g2);

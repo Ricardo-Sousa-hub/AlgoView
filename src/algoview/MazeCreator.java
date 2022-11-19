@@ -17,6 +17,12 @@ public class MazeCreator {
         this.qtdCellX = qtdCellX;
     }
 
+    public void reset(Cell[][] celulas){
+        this.celulas = celulas;
+        startCellX = 0;
+        startCellY = 0;
+    }
+
     public Cell[][] createOnlyOneCell(){
         if(running){
             Random r = new Random();
