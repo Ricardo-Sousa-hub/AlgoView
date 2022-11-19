@@ -21,6 +21,7 @@ public class Maze extends JPanel {
     private MazeCreator mazeCreator;
     private boolean isRunning = false;
     private boolean hasStartingPoint = false;
+    private boolean hasEndPoint = false;
     public Maze(){
         setPreferredSize(new Dimension(1001, 601));
         setBackground(Color.WHITE);
@@ -30,6 +31,7 @@ public class Maze extends JPanel {
 
     public void preencherLbirinto(){
         hasStartingPoint = false;
+        hasEndPoint = false;
         int posX = 0;
         int posY = 0;
         for(int y = 0; y < qtdCellY; y++){
@@ -148,6 +150,14 @@ public class Maze extends JPanel {
         isRunning = running;
     }
 
+    public boolean isHasEndPoint() {
+        return hasEndPoint;
+    }
+
+    public void setHasEndPoint(boolean hasEndPoint) {
+        this.hasEndPoint = hasEndPoint;
+    }
+
     public boolean isHasStartingPoint() {
         return hasStartingPoint;
     }
@@ -159,8 +169,30 @@ public class Maze extends JPanel {
     public void selecionarCelulaStart(int posX, int posY){
         for (int y = 0; y < qtdCellY; y++){
             for (int x = 0; x < qtdCellX; x++){
-                if(celulas[y][x].contains(posY, posX)){
-                    celulas[x][y].setStart(true);
+                if(celulas[y][x].contains(posX, posY) && !celulas[y][x].isEnd()){
+                    celulas[y][x].setStart(true);
+                    repaint();
+                }
+            }
+        }
+    }
+
+    public void removerCelulaStart(){
+        for (int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                if(celulas[y][x].isStart()){
+                    celulas[y][x].setStart(false);
+                    repaint();
+                }
+            }
+        }
+    }
+
+    public void selecionarCelulaEnd(int posX, int posY){
+        for (int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                if(celulas[y][x].contains(posX, posY) && !celulas[y][x].isStart()){
+                    celulas[y][x].setEnd(true);
                     repaint();
                 }
             }

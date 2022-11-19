@@ -33,6 +33,8 @@ public class Main extends JFrame implements ActionListener {
 
     String[] algoritmos = {"Bubble Sort", "Selection Sort", "Insertion Sort", "Quick Sort"};
 
+    String operacao;
+
     PrinterJob pj;
 
     public Main() { //mudar nome da função
@@ -121,6 +123,11 @@ public class Main extends JFrame implements ActionListener {
         menuItem.addActionListener(this);
         menu.add(menuItem);
 
+        menuItem = new JMenuItem("Selecionar Final");
+        //Adicionar opção ao menu
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+
         menuBar.add(menu);
 
         menu = new JMenu("Sort");
@@ -170,18 +177,56 @@ public class Main extends JFrame implements ActionListener {
             }
         }
         else if(e.getActionCommand().equals("Selecionar Inicio")){
+            operacao = "Selecionar Inicio";
             panelMaze.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
                     if(!panelMaze.isHasStartingPoint()){
                         panelMaze.selecionarCelulaStart(e.getX(), e.getY());
                         panelMaze.setHasStartingPoint(true);
                     }
+                    else if(panelMaze.isHasStartingPoint() && operacao.equals("Selecionar Inicio"))
+                    {
+                        panelMaze.removerCelulaStart();
+                        panelMaze.selecionarCelulaStart(e.getX(), e.getY());
+                    }
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+
+                }
+            });
+        }
+        else if(e.getActionCommand().equals("Selecionar Final")){
+            operacao = "Selecionar Final";
+            panelMaze.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if(!panelMaze.isHasEndPoint()){
+                        panelMaze.selecionarCelulaEnd(e.getX(), e.getY());
+                        panelMaze.setHasEndPoint(true);
+                    }
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+
                 }
 
                 @Override
