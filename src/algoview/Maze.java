@@ -21,39 +21,41 @@ public class Maze extends JPanel implements Printable {
     private final int qtdCellY = 600/CELL_SIZE;
 
     private Cell[][] celulas = new Cell[qtdCellY][qtdCellX];
-
-    ArrayList<Cell> stack = new ArrayList<>();
     private MazeCreator mazeCreator;
     private DFS dfs;
+    private BFS bfs;
     private boolean isRunning;
     private boolean hasStartingPoint = false;
     private boolean hasEndPoint = false;
 
-    private int startX;
-    private int startY;
-    private int endX;
-    private int endY;
+    private int startX = -1;
+    private int startY = -1;
+    private int endX = -1;
+    private int endY = -1;
+    private int delay;
     public Maze(){
         setPreferredSize(new Dimension(1001, 601));
         setBackground(Color.WHITE);
         preencherLbirinto();
         mazeCreator = new MazeCreator(celulas, qtdCellX);
         dfs = new DFS(celulas, qtdCellX, qtdCellY);
+        bfs = new BFS(celulas, qtdCellX, qtdCellY);
 
         isRunning = false;
     }
 
-    public void startSolver(){
+    public void dfsAlgorithm(){
         isRunning = true;
         dfs.setStartX(startX);
         dfs.setStartY(startY);
         dfs.setEndX(endX);
         dfs.setEndY(endY);
+        dfs.reset();
 
-        Timer solverTimer = new Timer(50, new ActionListener() {
+        Timer dfsTimer = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(celulasVisitadas() || !isRunning){
+                if(celulasCorrect() || !isRunning){
                     isRunning = false;
                     ((Timer)e.getSource()).stop();
                 }
@@ -65,7 +67,47 @@ public class Maze extends JPanel implements Printable {
                 repaint();
             }
         });
-        solverTimer.start();
+        dfsTimer.start();
+    }
+
+    public void bfsAlgorithm(){
+        isRunning = true;
+        bfs.setStartX(startX);
+        bfs.setStartY(startY);
+        bfs.setEndX(endX);
+        bfs.setEndY(endY);
+        bfs.reset();
+
+        Timer bfsTimer = new Timer(delay, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(celulasCorrect() || !isRunning){
+                    isRunning = false;
+                    ((Timer)e.getSource()).stop();
+                }
+                else{
+                    if(isRunning){
+                        celulas = bfs.startMazeSolver();
+                    }
+                }
+                repaint();
+            }
+        });
+        bfsTimer.start();
+    }
+
+    public void startSolver(String algoritmo){
+        if(!(startX == -1 && startY == -1 && endX == -1 && endY == -1)) {
+            switch (algoritmo) {
+                case "DFS":
+                    dfsAlgorithm();
+                    break;
+                case "BFS":
+                    bfsAlgorithm();
+                    break;
+            }
+        }
+
     }
 
     public void preencherLbirinto(){
@@ -105,7 +147,7 @@ public class Maze extends JPanel implements Printable {
 
     }
 
-    public boolean celulasVisitadas(){
+    public boolean celulasCorrect(){
         for (int y = 0; y < qtdCellY; y++){
             for (int x = 0; x < qtdCellX; x++){
                 if(!celulas[y][x].isCorrectPath()) return false;
@@ -114,12 +156,31 @@ public class Maze extends JPanel implements Printable {
         return true;
     }
 
+    public boolean celulasVisitadas(){
+        for (int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                if(!celulas[y][x].isVisitada()) return false;
+            }
+        }
+        return true;
+    }
+
+    public void reset(){
+        for (int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                celulas[y][x].setCorrectPath(false);
+                celulas[y][x].setStart(false);
+                celulas[y][x].setEnd(false);
+            }
+        }
+        repaint();
+    }
 
     public void gerarLabirinto(){
         mazeCreator.setRunning(true);
         mazeCreator.setRun_start(0);
         mazeCreator.reset(celulas);
-        Timer gerarLabirinto = new Timer(1, new ActionListener() {
+        Timer gerarLabirinto = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(mazeCreator.getStartCellY() == qtdCellY || !isRunning){
@@ -138,32 +199,6 @@ public class Maze extends JPanel implements Printable {
         });
         gerarLabirinto.start();
         dfs.setCelulas(celulas);
-
-        //Codigo anterior
-        /*for(int y = 0; y < qtdCellY; y++){
-            int run_start = 0;
-            for (int x = 0; x < qtdCellX; x++){
-                Random r = new Random();
-                if(y > 0 && (x+1 == qtdCellX || r.nextInt(2) == 0)){
-                    int cell = run_start + r.nextInt(x-run_start+1);
-                    celulas[y][cell].setVisitada(true);
-                    celulas[y][cell].setParedeCima(false);
-                    celulas[y-1][cell].setVisitada(true);
-                    celulas[y-1][cell].setParedeBaixo(false);
-                    run_start = x + 1;
-                }
-                else if(x+1 < qtdCellX)
-                {
-                    celulas[y][x].setVisitada(true);
-                    celulas[y][x].setParedeDir(false);
-                    celulas[y][x+1].setVisitada(true);
-                    celulas[y][x+1].setParedeEsq(false);
-                }
-            }
-        }
-
-        repaint();*/
-
     }
 
     public int[] getIndex(Cell cell){
@@ -288,5 +323,13 @@ public class Maze extends JPanel implements Printable {
         }
 
         return PAGE_EXISTS;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 }

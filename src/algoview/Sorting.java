@@ -11,10 +11,13 @@ import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Sorting extends JPanel  implements Printable {
 
-    public int[] array = {268, 148, 218, 179, 469, 310, 421, 332, 66, 252, 387, 470, 144, 490, 392, 377, 273, 370, 71, 346, 337, 150, 181, 380, 99, 357, 385, 221, 170, 479, 457, 342, 424, 417, 360, 297, 161, 127, 148, 419, 287, 117, 217, 472, 76, 187, 238, 420, 477, 260};
+    public int[] array;
+    public ArrayList<Integer> copiaArray = new ArrayList<>();
     private boolean isRunning = false;
 
     private String sortAlgorithm;
@@ -29,7 +32,7 @@ public class Sorting extends JPanel  implements Printable {
         setPreferredSize(new Dimension(1000, 600));
 
         setBackground(Color.WHITE);
-
+        array = gerarArray(50);
         bubbleSort = new BubbleSort(array);
         selectionSort = new SelectionSort(array);
         insertionSort = new InsertionSort(array);
@@ -37,9 +40,7 @@ public class Sorting extends JPanel  implements Printable {
     }
 
     public void reset(){
-        int[] array = {268, 148, 218, 179, 469, 310, 421, 332, 66, 252, 387, 470, 144, 490, 392, 377, 273, 370, 71, 346, 337, 150, 181, 380, 99, 357, 385, 221, 170, 479, 457, 342, 424, 417, 360, 297, 161, 127, 148, 419, 287, 117, 217, 472, 76, 187, 238, 420, 477, 260};
-
-        this.array = array;
+        array = copiaArray.stream().mapToInt(i -> i).toArray();
 
         // reset bubbleSort object
         bubbleSort.setCompareIndex(Integer.MAX_VALUE);
@@ -105,8 +106,19 @@ public class Sorting extends JPanel  implements Printable {
         }
     }
 
-    public boolean isSorted() {
+    public int[] gerarArray(int size){
+        copiaArray.clear();
+        array = new int[size];
+        Random r = new Random();
+        for (int x = 0; x < size; x++){
+            int val = r.nextInt(501);
+            copiaArray.add(val);
+            array[x] = val;
+        }
+        return array;
+    }
 
+    public boolean isSorted() {
         for (int i = 0; i < array.length - 1; i++) {
             if (array[i] > array[i + 1]) {
                 return false;

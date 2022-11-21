@@ -30,10 +30,12 @@ public class Main extends JFrame implements ActionListener {
     public Image startImage = null;
     JFileChooser fileChooser = new JFileChooser();
 
-    Sorting panelSorting = new Sorting();
-    Maze panelMaze = new Maze();
+    Sorting sortingPanel = new Sorting();
+    Maze mazePanel = new Maze();
+    JPanel opcoesMazePanel = new JPanel();
 
     String[] algoritmos = {"Bubble Sort", "Selection Sort", "Insertion Sort", "Quick Sort"};
+    String[] algoritmosMaze = {"DFS", "BFS"};
 
     String operacao;
     String sortingOrMaze = "sorting";
@@ -55,41 +57,114 @@ public class Main extends JFrame implements ActionListener {
 
     private void criarMenuBarEContainer() {
 
+        opcoesMazePanel.setPreferredSize(new Dimension(150, 600));
+        opcoesMazePanel.setBackground(Color.WHITE);
+
         Container cp = this.getContentPane();
         cp.setLayout(new FlowLayout());
-        cp.add(panelSorting);
-        cp.add(panelMaze);
-        panelMaze.setVisible(false);
+        cp.add(sortingPanel);
+        cp.add(mazePanel);
+        cp.add(opcoesMazePanel);
+        opcoesMazePanel.setVisible(false);
+        mazePanel.setVisible(false);
 
-        JComboBox listaAlgoritmos = new JComboBox(algoritmos);
-        panelSorting.add(listaAlgoritmos);
+        JComboBox listaAlgoritmosMazeJComboBox = new JComboBox(algoritmosMaze);
+        opcoesMazePanel.add(listaAlgoritmosMazeJComboBox);
 
-        JTextField delayTextField = new JTextField("10");
-        panelSorting.add(delayTextField);
+        JTextField delayMazeTextField = new JTextField("10");
+        opcoesMazePanel.add(delayMazeTextField);
 
-        JButton start = new JButton("EXECUTAR");
-        start.addActionListener(new ActionListener() {
+        JButton generateBaseButton = new JButton("Generate Maze Board");
+        generateBaseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!panelSorting.getRunning()){
-                    panelSorting.setsortAlgorithm(listaAlgoritmos.getSelectedItem().toString());
-                    panelSorting.setDelay(Integer.parseInt(delayTextField.getText()));
-                    panelSorting.setRunning(true);
-                    panelSorting.animate();
+                opcoesMazePanel.setVisible(true);
+                sortingOrMaze = "maze";
+                sortingPanel.setVisible(false);
+                mazePanel.setVisible(true);
+                mazePanel.preencherLbirinto();
+            }
+        });
+        opcoesMazePanel.add(generateBaseButton);
+
+        JButton generateMaze = new JButton("Generate Maze");
+        generateMaze.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!mazePanel.celulasVisitadas()){//não gerar 2 labirintos, dont work
+                    mazePanel.setRunning(true);
+                    mazePanel.gerarLabirinto();
+                }
+                else{
+                    mazePanel.preencherLbirinto();
+                    mazePanel.setRunning(true);
+                    mazePanel.gerarLabirinto();
                 }
             }
         });
-        panelSorting.add(start);
+        opcoesMazePanel.add(generateMaze);
 
-        JButton reset = new JButton("RESET");
-        reset.addActionListener(new ActionListener() {
+        JButton solveButton = new JButton("Solve");
+        solveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panelSorting.reset();
+                mazePanel.setDelay(Integer.parseInt(delayMazeTextField.getText()));
+                mazePanel.startSolver(listaAlgoritmosMazeJComboBox.getSelectedItem().toString());
+            }
+        });
+        opcoesMazePanel.add(solveButton);
+
+        JButton resetMazeButton = new JButton("Limpar");
+        resetMazeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mazePanel.reset();
+            }
+        });
+        opcoesMazePanel.add(resetMazeButton);
+
+        JComboBox listaAlgoritmosJComboBox = new JComboBox(algoritmos);
+        sortingPanel.add(listaAlgoritmosJComboBox);
+
+        JTextField delayTextField = new JTextField("10");
+        sortingPanel.add(delayTextField);
+
+        JButton startButton = new JButton("EXECUTAR");
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!sortingPanel.getRunning()){
+                    sortingPanel.setsortAlgorithm(listaAlgoritmosJComboBox.getSelectedItem().toString());
+                    sortingPanel.setDelay(Integer.parseInt(delayTextField.getText()));
+                    sortingPanel.setRunning(true);
+                    sortingPanel.animate();
+                }
+            }
+        });
+        sortingPanel.add(startButton);
+
+        JTextField arraySizeTextField = new JTextField("50");
+        sortingPanel.add(arraySizeTextField);
+
+        JButton randomArrayButton = new JButton("Gerar Array");
+        randomArrayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sortingPanel.gerarArray(Integer.parseInt(arraySizeTextField.getText()));
+                repaint();
+            }
+        });
+        sortingPanel.add(randomArrayButton);
+
+        JButton resetButton = new JButton("Reset");
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sortingPanel.reset();
             }
         });
 
-        panelSorting.add(reset);
+        sortingPanel.add(resetButton);
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -111,10 +186,6 @@ public class Main extends JFrame implements ActionListener {
         menuBar.add(menu);
 
         menu = new JMenu("Maze");
-        menuItem = new JMenuItem("Generate Maze Board");
-        //Adicionar opção ao menu
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
 
         menuItem = new JMenuItem("Generate Maze");
         //Adicionar opção ao menu
@@ -127,11 +198,6 @@ public class Main extends JFrame implements ActionListener {
         menu.add(menuItem);
 
         menuItem = new JMenuItem("Selecionar Final");
-        //Adicionar opção ao menu
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
-
-        menuItem = new JMenuItem("Solve");
         //Adicionar opção ao menu
         menuItem.addActionListener(this);
         menu.add(menuItem);
@@ -158,10 +224,10 @@ public class Main extends JFrame implements ActionListener {
         else if(e.getActionCommand().equals("Imprimir")){
             switch (sortingOrMaze){
                 case "sorting":
-                    pj.setPrintable(panelSorting);
+                    pj.setPrintable(sortingPanel);
                     break;
                 case "maze":
-                    pj.setPrintable(panelMaze);
+                    pj.setPrintable(mazePanel);
                     break;
             }
             HashPrintRequestAttributeSet printParams = new HashPrintRequestAttributeSet();
@@ -175,37 +241,25 @@ public class Main extends JFrame implements ActionListener {
                 }
             }
         }
-        else if(e.getActionCommand().equals("Generate Maze Board")){
-            sortingOrMaze = "maze";
-            panelSorting.setVisible(false);
-            panelMaze.setVisible(true);
-            panelMaze.preencherLbirinto();
-        }
         else if(e.getActionCommand().equals("Generate Maze")){
             sortingOrMaze = "maze";
-            if(!panelMaze.celulasVisitadas()){//não gerar 2 labirintos, dont work
-                panelMaze.setRunning(true);
-                panelMaze.gerarLabirinto();
-            }
-            else{
-                panelMaze.preencherLbirinto();
-                panelMaze.setRunning(true);
-                panelMaze.gerarLabirinto();
-            }
+            sortingPanel.setVisible(false);
+            mazePanel.setVisible(true);
+            opcoesMazePanel.setVisible(true);
         }
         else if(e.getActionCommand().equals("Selecionar Inicio")){
             operacao = "Selecionar Inicio";
-            panelMaze.addMouseListener(new MouseListener() {
+            mazePanel.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if(!panelMaze.isHasStartingPoint()){
-                        panelMaze.selecionarCelulaStart(e.getX(), e.getY());
-                        panelMaze.setHasStartingPoint(true);
+                    if(!mazePanel.isHasStartingPoint()){
+                        mazePanel.selecionarCelulaStart(e.getX(), e.getY());
+                        mazePanel.setHasStartingPoint(true);
                     }
-                    else if(panelMaze.isHasStartingPoint() && operacao.equals("Selecionar Inicio"))
+                    else if(mazePanel.isHasStartingPoint() && operacao.equals("Selecionar Inicio"))
                     {
-                        panelMaze.removerCelulaStart();
-                        panelMaze.selecionarCelulaStart(e.getX(), e.getY());
+                        mazePanel.removerCelulaStart();
+                        mazePanel.selecionarCelulaStart(e.getX(), e.getY());
                     }
                 }
 
@@ -232,17 +286,17 @@ public class Main extends JFrame implements ActionListener {
         }
         else if(e.getActionCommand().equals("Selecionar Final")){
             operacao = "Selecionar Final";
-            panelMaze.addMouseListener(new MouseListener() {
+            mazePanel.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if(!panelMaze.isHasEndPoint()){
-                        panelMaze.selecionarCelulaEnd(e.getX(), e.getY());
-                        panelMaze.setHasEndPoint(true);
+                    if(!mazePanel.isHasEndPoint()){
+                        mazePanel.selecionarCelulaEnd(e.getX(), e.getY());
+                        mazePanel.setHasEndPoint(true);
                     }
-                    else if(panelMaze.isHasStartingPoint() && operacao.equals("Selecionar Final"))
+                    else if(mazePanel.isHasStartingPoint() && operacao.equals("Selecionar Final"))
                     {
-                        panelMaze.removerCelulaEnd();
-                        panelMaze.selecionarCelulaEnd(e.getX(), e.getY());
+                        mazePanel.removerCelulaEnd();
+                        mazePanel.selecionarCelulaEnd(e.getX(), e.getY());
                     }
                 }
 
@@ -267,13 +321,11 @@ public class Main extends JFrame implements ActionListener {
                 }
             });
         }
-        else if(e.getActionCommand().equals("Solve")){
-            panelMaze.startSolver();
-        }
         else if(e.getActionCommand().equals("Sort")){
             sortingOrMaze = "sorting";
-            panelMaze.setVisible(false);
-            panelSorting.setVisible(true);
+            opcoesMazePanel.setVisible(false);
+            mazePanel.setVisible(false);
+            sortingPanel.setVisible(true);
         }
     }
 

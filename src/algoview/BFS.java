@@ -2,7 +2,8 @@ package algoview;
 
 import java.util.ArrayList;
 
-public class DFS {
+public class BFS {
+
     private Cell celulas[][];
     private int qtdCellX;
     private int qtdCellY;
@@ -10,18 +11,18 @@ public class DFS {
     private int startY;
     private int endX;
     private int endY;
-
-    private ArrayList<Cell> stack = new ArrayList<>();
+    private ArrayList<Cell> queue = new ArrayList<>();
     private ArrayList<Cell> visited = new ArrayList<>();
 
-    public DFS(Cell[][] celulas, int qtdCellX, int qtdCellY) {
+    public BFS(Cell[][] celulas, int qtdCellX, int qtdCellY) {
         this.celulas = celulas;
         this.qtdCellX = qtdCellX;
         this.qtdCellY = qtdCellY;
     }
 
-    public Cell[][] getCelulas() {
-        return celulas;
+    public void reset(){
+        queue.clear();
+        visited.clear();
     }
 
     public void setCelulas(Cell[][] celulas) {
@@ -34,7 +35,7 @@ public class DFS {
             Cell celulaCima = celulas[y-1][x];
 
             if(!celulas[y-1][x].isParedeBaixo() && !celulas[y][x].isParedeCima() && !celulas[y-1][x].isCorrectPath()){
-                stack.add(0,celulaCima);
+                queue.add(celulaCima);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
@@ -44,7 +45,7 @@ public class DFS {
             Cell celulaEsq = celulas[y][x-1];
 
             if(!celulas[y][x-1].isParedeDir() && !celulas[y][x].isParedeEsq() && !celulas[y][x-1].isCorrectPath()){
-                stack.add(0, celulaEsq);
+                queue.add(celulaEsq);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
@@ -54,7 +55,7 @@ public class DFS {
             Cell celulaBaixo = celulas[y+1][x];
 
             if(!celulas[y+1][x].isParedeCima() && !celulas[y][x].isParedeBaixo() && !celulas[y+1][x].isCorrectPath()){
-                stack.add(0,celulaBaixo);
+                queue.add(celulaBaixo);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
@@ -63,27 +64,24 @@ public class DFS {
             Cell celulaDir = celulas[y][x+1];
 
             if(!celulas[y][x+1].isParedeEsq() && !celulas[y][x].isParedeDir() && !celulas[y][x+1].isCorrectPath()){
-                stack.add(0, celulaDir);
+                queue.add(celulaDir);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
         }
-    }
 
-    public void reset(){
-        visited.clear();
-        stack.clear();
     }
 
     public Cell[][] startMazeSolver(){
         if(!(startX == endX && startY == endY)) {
-            visited.add(celulas[startY][startX]);
             celulas[startY][startX].setCorrectPath(true);
+            visited.add(celulas[startY][startX]);
+
             getVizinhos(startX, startY);
 
-            startX = stack.get(0).getIndexX();
-            startY = stack.get(0).getIndexY();
-            stack.remove(0);
+            startX = queue.get(0).getIndexX();
+            startY = queue.get(0).getIndexY();
+            queue.remove(0);
         }
         return celulas;
     }

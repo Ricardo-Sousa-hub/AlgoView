@@ -96,10 +96,25 @@ class SplashPanel extends JPanel {
         g2.setStroke(stroke);
         g2.setPaint(Color.white);
 
-        Font f = new Font("Arial", Font.BOLD, 24);
+        Font f = new Font("Arial", Font.BOLD, 50);
+
+        String welcame = "AlgoView";
+
+        FontMetrics fm = g2.getFontMetrics(f);
+
+        int x = (getWidth() - fm.stringWidth(welcame)) / 2;
+        int y = (fm.getAscent() + (getHeight() - (fm.getAscent() + fm.getDescent())) / 2);
 
         g2.setFont(f);
-        g2.drawString("AlgoView", (getWidth()-100)/2, getHeight()/2);
+
+        g2.setColor(new Color(255, 255, 255));
+        g2.translate((getWidth()-fm.stringWidth(welcame))/2, (getHeight()-fm.getHeight())/2);
+        g2.fillRect(0, 0, fm.stringWidth(welcame), fm.getHeight());
+        g2.drawRect(0, 0, fm.stringWidth(welcame), fm.getHeight());
+
+        g2.setColor(Color.BLACK);
+        g2.drawString(welcame, 0, fm.getHeight()-10);
+
     }
 
 }
