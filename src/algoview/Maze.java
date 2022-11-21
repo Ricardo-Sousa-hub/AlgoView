@@ -4,10 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Maze extends JPanel {
 
@@ -19,14 +16,48 @@ public class Maze extends JPanel {
 
     ArrayList<Cell> stack = new ArrayList<>();
     private MazeCreator mazeCreator;
-    private boolean isRunning = false;
+    private FollowWallMazeSolver followWallMazeSolver;
+    private boolean isRunning;
     private boolean hasStartingPoint = false;
     private boolean hasEndPoint = false;
+
+    private int startX;
+    private int startY;
+    private int endX;
+    private int endY;
     public Maze(){
         setPreferredSize(new Dimension(1001, 601));
         setBackground(Color.WHITE);
         preencherLbirinto();
         mazeCreator = new MazeCreator(celulas, qtdCellX);
+        followWallMazeSolver = new FollowWallMazeSolver(celulas, qtdCellX, qtdCellY);
+
+        isRunning = false;
+    }
+
+    public void startSolver(){
+        isRunning = true;
+        followWallMazeSolver.setStartX(startX);
+        followWallMazeSolver.setStartY(startY);
+        followWallMazeSolver.setEndX(endX);
+        followWallMazeSolver.setEndY(endY);
+
+        Timer solverTimer = new Timer(50, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(celulasVisitadas() || !isRunning){
+                    isRunning = false;
+                    ((Timer)e.getSource()).stop();
+                }
+                else{
+                    if(isRunning){
+                        celulas = followWallMazeSolver.startMazeSolver();
+                    }
+                }
+                repaint();
+            }
+        });
+        solverTimer.start();
     }
 
     public void preencherLbirinto(){
@@ -36,7 +67,7 @@ public class Maze extends JPanel {
         int posY = 0;
         for(int y = 0; y < qtdCellY; y++){
             for (int x = 0; x < qtdCellX; x++){
-                Cell cell = new Cell(posX, posY, CELL_SIZE, CELL_SIZE);
+                Cell cell = new Cell(posX, posY, CELL_SIZE, CELL_SIZE, x, y);
 
                 celulas[y][x] = cell;
 
@@ -67,16 +98,13 @@ public class Maze extends JPanel {
     }
 
     public boolean celulasVisitadas(){
-        for (Cell[] c: celulas) {
-            for(Cell c1: c){
-                if(!c1.isVisitada()){
-                    return false;
-                }
+        for (int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                if(!celulas[y][x].isCorrectPath()) return false;
             }
         }
         return true;
     }
-
 
 
     public void gerarLabirinto(){
@@ -86,7 +114,7 @@ public class Maze extends JPanel {
         Timer gerarLabirinto = new Timer(1, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(celulasVisitadas() || !isRunning){
+                if(mazeCreator.getStartCellY() == qtdCellY || !isRunning){
                     mazeCreator.setRunning(false);
                     isRunning = false;
                     ((Timer)e.getSource()).stop();
@@ -101,6 +129,7 @@ public class Maze extends JPanel {
             }
         });
         gerarLabirinto.start();
+        followWallMazeSolver.setCelulas(celulas);
 
         //Codigo anterior
         /*for(int y = 0; y < qtdCellY; y++){
@@ -170,6 +199,8 @@ public class Maze extends JPanel {
         for (int y = 0; y < qtdCellY; y++){
             for (int x = 0; x < qtdCellX; x++){
                 if(celulas[y][x].contains(posX, posY) && !celulas[y][x].isEnd()){
+                    startX = x;
+                    startY = y;
                     celulas[y][x].setStart(true);
                     repaint();
                 }
@@ -193,6 +224,19 @@ public class Maze extends JPanel {
             for (int x = 0; x < qtdCellX; x++){
                 if(celulas[y][x].contains(posX, posY) && !celulas[y][x].isStart()){
                     celulas[y][x].setEnd(true);
+                    endX = x;
+                    endY = y;
+                    repaint();
+                }
+            }
+        }
+    }
+
+    public void removerCelulaEnd() {
+        for (int y = 0; y < qtdCellY; y++){
+            for (int x = 0; x < qtdCellX; x++){
+                if(celulas[y][x].isEnd()){
+                    celulas[y][x].setEnd(false);
                     repaint();
                 }
             }

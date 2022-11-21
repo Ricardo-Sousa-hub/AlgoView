@@ -128,6 +128,11 @@ public class Main extends JFrame implements ActionListener {
         menuItem.addActionListener(this);
         menu.add(menuItem);
 
+        menuItem = new JMenuItem("Solve");
+        //Adicionar opção ao menu
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+
         menuBar.add(menu);
 
         menu = new JMenu("Sort");
@@ -222,6 +227,11 @@ public class Main extends JFrame implements ActionListener {
                         panelMaze.selecionarCelulaEnd(e.getX(), e.getY());
                         panelMaze.setHasEndPoint(true);
                     }
+                    else if(panelMaze.isHasStartingPoint() && operacao.equals("Selecionar Final"))
+                    {
+                        panelMaze.removerCelulaEnd();
+                        panelMaze.selecionarCelulaEnd(e.getX(), e.getY());
+                    }
                 }
 
                 @Override
@@ -244,6 +254,9 @@ public class Main extends JFrame implements ActionListener {
 
                 }
             });
+        }
+        else if(e.getActionCommand().equals("Solve")){
+            panelMaze.startSolver();
         }
         else if(e.getActionCommand().equals("Sort")){
             panelMaze.setVisible(false);

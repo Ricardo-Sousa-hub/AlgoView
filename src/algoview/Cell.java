@@ -8,7 +8,7 @@ import java.util.Random;
 @SuppressWarnings("ALL")
 public class Cell extends Rectangle {
 
-    public Cell(int x, int y, int width, int height){
+    public Cell(int x, int y, int width, int height, int indexX, int indexY){
         paredeEsq = true;
         paredeDir = true;
         paredeBaixo = true;
@@ -21,13 +21,17 @@ public class Cell extends Rectangle {
         visitada = false;
         start = false;
         end = false;
-        vizinhos = new ArrayList<>(4);
-        vizinhos.add(null);
-        vizinhos.add(null);
-        vizinhos.add(null);
-        vizinhos.add(null);
+
+        this.indexX = indexX;
+        this.indexY = indexY;
+
+        wasHere = false;
+        correctPath = false;
     }
 
+
+    private int indexX;
+    private int indexY;
     private ArrayList<Cell> vizinhos;
     private Color color;
     private boolean paredeEsq;
@@ -37,6 +41,8 @@ public class Cell extends Rectangle {
     private boolean visitada;
     private boolean start;
     private boolean end;
+    private boolean wasHere;
+    private boolean correctPath;
 
     private void desenharInteriorCelula(Color color, Graphics2D g2){
         GeneralPath cell = new GeneralPath();
@@ -58,6 +64,10 @@ public class Cell extends Rectangle {
         }
         if(!visitada){
             g2.setColor(color);
+        }
+
+        if(correctPath && !start){
+            g2.setColor(Color.YELLOW);
         }
 
         g2.fill(cell);
@@ -87,21 +97,23 @@ public class Cell extends Rectangle {
 
     public void drawCell(Graphics2D g2){
         desenharInteriorCelula(color, g2);
-
         desenharParedesCelula(Color.BLACK, g2);
     }
 
-    public void addItemToVizinhos(Cell vizinho, int pos)
-    {
-        vizinhos.add(pos, vizinho);
+    public boolean isCorrectPath() {
+        return correctPath;
     }
 
-    public Cell getVizinho(int i){
-        return vizinhos.get(i);
+    public void setCorrectPath(boolean correctPath) {
+        this.correctPath = correctPath;
     }
 
-    public int vizinhosLenght(){
-        return vizinhos.size();
+    public boolean isWasHere() {
+        return wasHere;
+    }
+
+    public void setWasHere(boolean wasHere) {
+        this.wasHere = wasHere;
     }
 
     public boolean isEnd() {
@@ -124,26 +136,15 @@ public class Cell extends Rectangle {
         return visitada;
     }
 
-    public boolean temVizinhosPorVisitar(){
-        for(Cell cell : vizinhos){
-            if(cell != null && !cell.isVisitada()){
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public double getX() {
+        return x;
     }
 
-    public Cell randomVizinho(){
-        Random r = new Random();
-        Cell vizinho = vizinhos.get(r.nextInt(vizinhos.size()));
-
-        while (vizinho == null){
-            vizinho = vizinhos.get(r.nextInt(vizinhos.size()));
-        }
-
-        return vizinho;
+    @Override
+    public double getY() {
+        return y;
     }
-
     public void setVisitada(boolean visitada) {
         this.visitada = visitada;
     }
@@ -197,21 +198,37 @@ public class Cell extends Rectangle {
     }
 
     public void removerParedeEntreCelulas(Cell currentCell, Cell nextCell){
-        if(currentCell.getX() == nextCell.getX()-25){
+        if(currentCell.getX() == nextCell.getX()+25){
             currentCell.setParedeEsq(false);
             nextCell.setParedeDir(false);
         }
-        if(currentCell.getX() == nextCell.getX()+25){
+        if(currentCell.getX() == nextCell.getX()-25){
             currentCell.setParedeDir(false);
-            currentCell.setParedeEsq(false);
+            nextCell.setParedeEsq(false);
         }
-        if(currentCell.getY() == nextCell.getY()-25){
+        if(currentCell.getY() == nextCell.getY()+25){
             currentCell.setParedeCima(false);
             nextCell.setParedeBaixo(false);
         }
-        if(currentCell.getY() == nextCell.getY()+25){
+        if(currentCell.getY() == nextCell.getY()-25){
             currentCell.setParedeBaixo(false);
-            currentCell.setParedeCima(false);
+            nextCell.setParedeCima(false);
         }
+    }
+
+    public int getIndexX() {
+        return indexX;
+    }
+
+    public void setIndexX(int indexX) {
+        this.indexX = indexX;
+    }
+
+    public int getIndexY() {
+        return indexY;
+    }
+
+    public void setIndexY(int indexY) {
+        this.indexY = indexY;
     }
 }
