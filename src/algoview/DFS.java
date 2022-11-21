@@ -34,7 +34,7 @@ public class DFS {
             Cell celulaDir = celulas[y][x+1];
 
             if(!celulas[y][x+1].isParedeEsq() && !celulas[y][x].isParedeDir() && !celulas[y][x+1].isCorrectPath()){
-                stack.add(celulaDir);
+                stack.add(0, celulaDir);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
@@ -43,7 +43,7 @@ public class DFS {
             Cell celulaEsq = celulas[y][x-1];
 
             if(!celulas[y][x-1].isParedeDir() && !celulas[y][x].isParedeEsq() && !celulas[y][x-1].isCorrectPath()){
-                stack.add(celulaEsq);
+                stack.add(0, celulaEsq);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
@@ -52,7 +52,7 @@ public class DFS {
             Cell celulaBaixo = celulas[y+1][x];
 
             if(!celulas[y+1][x].isParedeCima() && !celulas[y][x].isParedeBaixo() && !celulas[y+1][x].isCorrectPath()){
-                stack.add(celulaBaixo);
+                stack.add(0,celulaBaixo);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
@@ -61,7 +61,7 @@ public class DFS {
             Cell celulaCima = celulas[y-1][x];
 
             if(!celulas[y-1][x].isParedeBaixo() && !celulas[y][x].isParedeCima() && ! celulas[y-1][x].isCorrectPath()){
-                stack.add(celulaCima);
+                stack.add(0,celulaCima);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
