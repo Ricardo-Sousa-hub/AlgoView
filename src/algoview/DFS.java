@@ -31,14 +31,15 @@ public class DFS {
     public void getVizinhos(int x, int y){
 
         try{
-            Cell celulaDir = celulas[y][x+1];
+            Cell celulaCima = celulas[y-1][x];
 
-            if(!celulas[y][x+1].isParedeEsq() && !celulas[y][x].isParedeDir() && !celulas[y][x+1].isCorrectPath()){
-                stack.add(0, celulaDir);
+            if(!celulas[y-1][x].isParedeBaixo() && !celulas[y][x].isParedeCima() && ! celulas[y-1][x].isCorrectPath()){
+                stack.add(0,celulaCima);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
         }
+
         try{
             Cell celulaEsq = celulas[y][x-1];
 
@@ -48,6 +49,7 @@ public class DFS {
         }catch (ArrayIndexOutOfBoundsException ex){
 
         }
+
         try{
             Cell celulaBaixo = celulas[y+1][x];
 
@@ -58,14 +60,15 @@ public class DFS {
 
         }
         try{
-            Cell celulaCima = celulas[y-1][x];
+            Cell celulaDir = celulas[y][x+1];
 
-            if(!celulas[y-1][x].isParedeBaixo() && !celulas[y][x].isParedeCima() && ! celulas[y-1][x].isCorrectPath()){
-                stack.add(0,celulaCima);
+            if(!celulas[y][x+1].isParedeEsq() && !celulas[y][x].isParedeDir() && !celulas[y][x+1].isCorrectPath()){
+                stack.add(0, celulaDir);
             }
         }catch (ArrayIndexOutOfBoundsException ex){
 
         }
+
     }
 
     public Cell[][] startMazeSolver(){
