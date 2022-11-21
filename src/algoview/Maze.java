@@ -1,12 +1,20 @@
 package algoview;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
-public class Maze extends JPanel {
+public class Maze extends JPanel implements Printable {
 
     private final int CELL_SIZE = 25;
     private final int qtdCellX = 1000/CELL_SIZE;
@@ -241,5 +249,44 @@ public class Maze extends JPanel {
                 }
             }
         }
+    }
+
+    @Override
+    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+        switch (pageIndex){
+            case 0:
+
+                Image image = null;
+                Graphics2D g2 = (Graphics2D) graphics;
+
+                BufferedImage bufferedImage = new BufferedImage(1000, 600, BufferedImage.TYPE_INT_RGB);
+
+                g2 = bufferedImage.createGraphics();
+
+                //codigo da função drawBoard
+                for(int y = 0; y < qtdCellY; y++) {
+                    for (int x = 0; x < qtdCellX; x++) {
+                        celulas[y][x].drawCell(g2);
+                    }
+                }
+
+                //salvar labirinto para "imagens"
+                String userDirectory = System.getProperty("user.dir");
+                File file = new File(userDirectory+"/src/imagens/maze.png");
+                try {
+                    ImageIO.write(bufferedImage, "png", file);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                //imagens 2x mais pequena
+                graphics.drawImage(bufferedImage, 0, 0, bufferedImage.getWidth()/2, bufferedImage.getHeight()/2, null);
+
+                break;
+            default:
+                return NO_SUCH_PAGE;
+        }
+
+        return PAGE_EXISTS;
     }
 }

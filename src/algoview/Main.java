@@ -14,6 +14,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.ByteArrayOutputStream;
@@ -34,6 +36,7 @@ public class Main extends JFrame implements ActionListener {
     String[] algoritmos = {"Bubble Sort", "Selection Sort", "Insertion Sort", "Quick Sort"};
 
     String operacao;
+    String sortingOrMaze = "sorting";
 
     PrinterJob pj;
 
@@ -153,9 +156,16 @@ public class Main extends JFrame implements ActionListener {
             mudarSplashScreen();
         }
         else if(e.getActionCommand().equals("Imprimir")){
-            pj.setPrintable(panelSorting);
+            switch (sortingOrMaze){
+                case "sorting":
+                    pj.setPrintable(panelSorting);
+                    break;
+                case "maze":
+                    pj.setPrintable(panelMaze);
+                    break;
+            }
             HashPrintRequestAttributeSet printParams = new HashPrintRequestAttributeSet();
-            printParams.add(new MediaPrintableArea(0f, 0f, getWidth()/72f, getHeight()/72f, MediaPrintableArea.INCH));
+            printParams.add(new MediaPrintableArea(0f, 0, getWidth()/72f, getHeight()/72f, MediaPrintableArea.INCH));
 
             if (pj.printDialog(printParams)) {
                 try {
@@ -166,12 +176,14 @@ public class Main extends JFrame implements ActionListener {
             }
         }
         else if(e.getActionCommand().equals("Generate Maze Board")){
+            sortingOrMaze = "maze";
             panelSorting.setVisible(false);
             panelMaze.setVisible(true);
             panelMaze.preencherLbirinto();
         }
         else if(e.getActionCommand().equals("Generate Maze")){
-            if(!panelMaze.celulasVisitadas()){
+            sortingOrMaze = "maze";
+            if(!panelMaze.celulasVisitadas()){//não gerar 2 labirintos, dont work
                 panelMaze.setRunning(true);
                 panelMaze.gerarLabirinto();
             }
@@ -259,6 +271,7 @@ public class Main extends JFrame implements ActionListener {
             panelMaze.startSolver();
         }
         else if(e.getActionCommand().equals("Sort")){
+            sortingOrMaze = "sorting";
             panelMaze.setVisible(false);
             panelSorting.setVisible(true);
         }
@@ -294,4 +307,6 @@ public class Main extends JFrame implements ActionListener {
         byte[] imageBytes = baos.toByteArray();
         return imageBytes;
     }
+
+
 }
