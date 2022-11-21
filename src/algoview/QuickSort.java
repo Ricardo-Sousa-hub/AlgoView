@@ -11,7 +11,6 @@ public class QuickSort {
         stack = new int[array.length];
         low = 0;
         high = array.length-1;
-        System.out.println(high);
         array_index = 0;
         compare_index = 0;
         x = 0;

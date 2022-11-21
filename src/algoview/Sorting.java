@@ -66,7 +66,9 @@ public class Sorting extends JPanel  implements Printable {
         quickSort.setArrayIndex(Integer.MAX_VALUE);
         quickSort.setCompareIndex(Integer.MAX_VALUE);
         quickSort.setPartition(-1);
+        quickSort.setHigh(this.array.length-1);
         quickSort.setIsPartioning(false);
+        quickSort.setArray(array);
 
         isRunning = false;
         repaint();
