@@ -1,9 +1,8 @@
 package algoview;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
-public class FollowWallMazeSolver {
+public class DFS {
     private Cell celulas[][];
     private int qtdCellX;
     private int qtdCellY;
@@ -15,7 +14,7 @@ public class FollowWallMazeSolver {
     private ArrayList<Cell> stack = new ArrayList<>();
     private ArrayList<Cell> visited = new ArrayList<>();
 
-    public FollowWallMazeSolver(Cell[][] celulas, int qtdCellX, int qtdCellY) {
+    public DFS(Cell[][] celulas, int qtdCellX, int qtdCellY) {
         this.celulas = celulas;
         this.qtdCellX = qtdCellX;
         this.qtdCellY = qtdCellY;

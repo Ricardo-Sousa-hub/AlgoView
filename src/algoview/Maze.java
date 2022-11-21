@@ -16,7 +16,7 @@ public class Maze extends JPanel {
 
     ArrayList<Cell> stack = new ArrayList<>();
     private MazeCreator mazeCreator;
-    private FollowWallMazeSolver followWallMazeSolver;
+    private DFS dfs;
     private boolean isRunning;
     private boolean hasStartingPoint = false;
     private boolean hasEndPoint = false;
@@ -30,17 +30,17 @@ public class Maze extends JPanel {
         setBackground(Color.WHITE);
         preencherLbirinto();
         mazeCreator = new MazeCreator(celulas, qtdCellX);
-        followWallMazeSolver = new FollowWallMazeSolver(celulas, qtdCellX, qtdCellY);
+        dfs = new DFS(celulas, qtdCellX, qtdCellY);
 
         isRunning = false;
     }
 
     public void startSolver(){
         isRunning = true;
-        followWallMazeSolver.setStartX(startX);
-        followWallMazeSolver.setStartY(startY);
-        followWallMazeSolver.setEndX(endX);
-        followWallMazeSolver.setEndY(endY);
+        dfs.setStartX(startX);
+        dfs.setStartY(startY);
+        dfs.setEndX(endX);
+        dfs.setEndY(endY);
 
         Timer solverTimer = new Timer(50, new ActionListener() {
             @Override
@@ -51,7 +51,7 @@ public class Maze extends JPanel {
                 }
                 else{
                     if(isRunning){
-                        celulas = followWallMazeSolver.startMazeSolver();
+                        celulas = dfs.startMazeSolver();
                     }
                 }
                 repaint();
@@ -129,7 +129,7 @@ public class Maze extends JPanel {
             }
         });
         gerarLabirinto.start();
-        followWallMazeSolver.setCelulas(celulas);
+        dfs.setCelulas(celulas);
 
         //Codigo anterior
         /*for(int y = 0; y < qtdCellY; y++){
