@@ -127,11 +127,7 @@ public class Sorting extends JPanel  implements Printable {
             copiaArray.add(val);
             array[x] = val;
         }
-
-        bubbleSort.setArray(array);
-        insertionSort.setArray(array);
-        quickSort.setArray(array);
-        selectionSort.setArray(array);
+        reset();
     }
 
     public boolean isSorted() {
