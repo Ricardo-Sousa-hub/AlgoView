@@ -1,24 +1,21 @@
 package algoview;
 
-import java.util.ArrayList;
+import java.util.*;
 
-public class BFS {
+public class AStar {
 
     private Cell celulas[][];
     private int startX;
     private int startY;
     private int endX;
     private int endY;
+    private double posEndX;
+    private double posEndY;
+
     private ArrayList<Cell> queue = new ArrayList<>();
-    private ArrayList<Cell> visited = new ArrayList<>();
 
-    public BFS(Cell[][] celulas) {
+    public AStar(Cell[][] celulas) {
         this.celulas = celulas;
-    }
-
-    public void reset(){
-        queue.clear();
-        visited.clear();
     }
 
     public void setCelulas(Cell[][] celulas) {
@@ -65,18 +62,39 @@ public class BFS {
         }catch (ArrayIndexOutOfBoundsException ex){
 
         }
+
+        sortQueue();
+
+    }
+
+    private void sortQueue(){
+        boolean sorted = false;
+        while (!sorted){
+            sorted = true;
+            for (int i = 0; i < queue.size()-1; i++){
+                double distA = Math.sqrt((queue.get(i).getX() - posEndX) * (queue.get(i).getX() - posEndX) + (queue.get(i).getY() - posEndY) * (queue.get(i).getY() - posEndY));
+                double distB = Math.sqrt((queue.get(i+1).getX() - posEndX) * (queue.get(i+1).getX() - posEndX) + (queue.get(i+1).getY() - posEndY) * (queue.get(i+1).getY() - posEndY));
+                if(distA > distB){
+                    Cell temp = queue.get(i);
+                    queue.set(i, queue.get(i+1));
+                    queue.set(i+1, temp);
+                    sorted = false;
+                }
+            }
+        }
     }
 
     public Cell[][] startMazeSolver(){
         if(!(startX == endX && startY == endY)) {
             celulas[startY][startX].setCorrectPath(true);
-            visited.add(celulas[startY][startX]);
 
             getVizinhos(startX, startY);
 
             startX = queue.get(0).getIndexX();
             startY = queue.get(0).getIndexY();
             queue.remove(0);
+            sortQueue();
+
         }
         return celulas;
     }
@@ -111,5 +129,25 @@ public class BFS {
 
     public void setEndY(int endY) {
         this.endY = endY;
+    }
+
+    public void reset() {
+        queue.clear();
+    }
+
+    public double getPosEndX() {
+        return posEndX;
+    }
+
+    public void setPosEndX(double posEndX) {
+        this.posEndX = posEndX;
+    }
+
+    public double getPosEndY() {
+        return posEndY;
+    }
+
+    public void setPosEndY(double posEndY) {
+        this.posEndY = posEndY;
     }
 }

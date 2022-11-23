@@ -1,21 +1,13 @@
 package algoview;
 
-import javax.imageio.ImageIO;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.standard.MediaPrintableArea;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.RenderedImage;
-import java.awt.image.WritableRaster;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.ByteArrayOutputStream;
@@ -23,11 +15,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Hashtable;
 
 public class Main extends JFrame implements ActionListener {
-
-    public Image startImage = null;
     JFileChooser fileChooser = new JFileChooser();
 
     Sorting sortingPanel = new Sorting();
@@ -35,7 +24,7 @@ public class Main extends JFrame implements ActionListener {
     JPanel opcoesMazePanel = new JPanel();
 
     String[] algoritmos = {"Bubble Sort", "Selection Sort", "Insertion Sort", "Quick Sort"};
-    String[] algoritmosMaze = {"DFS", "BFS"};
+    String[] algoritmosMaze = {"DFS", "BFS", "AStar"};
 
     String operacao;
     String sortingOrMaze = "sorting";
@@ -78,11 +67,12 @@ public class Main extends JFrame implements ActionListener {
         generateBaseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                opcoesMazePanel.setVisible(true);
                 sortingOrMaze = "maze";
-                sortingPanel.setVisible(false);
-                mazePanel.setVisible(true);
-                mazePanel.preencherLbirinto();
+                if(!mazePanel.isRunning()){
+                    mazePanel.preencherLabirinto();
+                }else{
+                    JOptionPane.showMessageDialog(getParent(), "Aguarde enquanto o labirinto é gerado");
+                }
             }
         });
         opcoesMazePanel.add(generateBaseButton);
@@ -91,15 +81,23 @@ public class Main extends JFrame implements ActionListener {
         generateMaze.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!mazePanel.celulasVisitadas()){//não gerar 2 labirintos, dont work
-                    mazePanel.setRunning(true);
-                    mazePanel.gerarLabirinto();
+                if (!mazePanel.isRunning()) {
+                    if (!mazePanel.isRunning()) {//não gerar 2 labirintos um por cima do outro //relativo?
+                        mazePanel.setRunning(true);
+                        try {
+                            mazePanel.setDelay(Integer.parseInt(delayMazeTextField.getText()));
+                            mazePanel.preencherLabirinto();
+                            mazePanel.gerarLabirinto();
+                        }catch (NumberFormatException ex){
+                            JOptionPane.showMessageDialog(getParent(), "Por favor introduza a velocidade de execução");
+                        }
+                    } else {
+                        mazePanel.preencherLabirinto();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(getParent(), "Já está a ser gerado um labirinto");
                 }
-                else{
-                    mazePanel.preencherLbirinto();
-                    mazePanel.setRunning(true);
-                    mazePanel.gerarLabirinto();
-                }
+
             }
         });
         opcoesMazePanel.add(generateMaze);
@@ -108,8 +106,18 @@ public class Main extends JFrame implements ActionListener {
         solveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mazePanel.setDelay(Integer.parseInt(delayMazeTextField.getText()));
-                mazePanel.startSolver(listaAlgoritmosMazeJComboBox.getSelectedItem().toString());
+                try {
+                    mazePanel.setDelay(Integer.parseInt(delayMazeTextField.getText()));
+                    if(mazePanel.isHasEndPoint() && mazePanel.isHasStartingPoint()){
+                        mazePanel.startSolver(listaAlgoritmosMazeJComboBox.getSelectedItem().toString());
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(getParent(), "Por favor selecione um ponto de inicio e um ponto final");
+                    }
+                }catch (NumberFormatException ex){
+                    JOptionPane.showMessageDialog(getParent(), "Por favor introduza a velocidade de execução");
+                }
+
             }
         });
         opcoesMazePanel.add(solveButton);
@@ -135,9 +143,14 @@ public class Main extends JFrame implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 if(!sortingPanel.getRunning()){
                     sortingPanel.setsortAlgorithm(listaAlgoritmosJComboBox.getSelectedItem().toString());
-                    sortingPanel.setDelay(Integer.parseInt(delayTextField.getText()));
-                    sortingPanel.setRunning(true);
-                    sortingPanel.animate();
+                    try {
+                        sortingPanel.setDelay(Integer.parseInt(delayTextField.getText()));
+                        sortingPanel.setRunning(true);
+                        sortingPanel.animate();
+                    }catch (NumberFormatException ex){
+                        JOptionPane.showMessageDialog(getParent(), "Por favor introduza a velocidade de execução");
+                    }
+
                 }
             }
         });
@@ -150,8 +163,16 @@ public class Main extends JFrame implements ActionListener {
         randomArrayButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sortingPanel.gerarArray(Integer.parseInt(arraySizeTextField.getText()));
-                repaint();
+                try {
+                    int size = Integer.parseInt(arraySizeTextField.getText());
+                    if(size <= 0){
+                        size = 10;
+                    }
+                    sortingPanel.gerarArray2(size);
+                    repaint();
+                }catch (NumberFormatException ex){
+                    JOptionPane.showMessageDialog(getParent(), "Por favor introduza um tamanho valido para a array");
+                }
             }
         });
         sortingPanel.add(randomArrayButton);
@@ -351,14 +372,15 @@ public class Main extends JFrame implements ActionListener {
         }
     }
 
-    public byte[] extractBytes (String ImageName) throws IOException { //TODO CORRIGIR
+
+    /*public byte[] extractBytes (String ImageName) throws IOException { //Não recolhe a cor CORRIGIR
         // open image
         File imgPath = new File(ImageName);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] imageBytes = baos.toByteArray();
         return imageBytes;
-    }
+    }*/
 
 
 }

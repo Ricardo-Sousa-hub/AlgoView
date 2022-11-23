@@ -84,6 +84,9 @@ public class Sorting extends JPanel  implements Printable {
     }
 
     public void setDelay(int delay){
+        if(delay <= 0){
+            delay = 50;
+        }
         this.delay = delay;
     }
 
@@ -116,6 +119,22 @@ public class Sorting extends JPanel  implements Printable {
             array[x] = val;
         }
         return array;
+    }
+
+    public void gerarArray2(int size){
+        copiaArray.clear();
+        array = new int[size];
+        Random r = new Random();
+        for (int x = 0; x < size; x++){
+            int val = r.nextInt(501);
+            copiaArray.add(val);
+            array[x] = val;
+        }
+
+        bubbleSort.setArray(array);
+        insertionSort.setArray(array);
+        quickSort.setArray(array);
+        selectionSort.setArray(array);
     }
 
     public boolean isSorted() {

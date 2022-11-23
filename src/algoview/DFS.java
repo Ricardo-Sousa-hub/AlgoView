@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 public class DFS {
     private Cell celulas[][];
-    private int qtdCellX;
-    private int qtdCellY;
     private int startX;
     private int startY;
     private int endX;
@@ -14,10 +12,8 @@ public class DFS {
     private ArrayList<Cell> stack = new ArrayList<>();
     private ArrayList<Cell> visited = new ArrayList<>();
 
-    public DFS(Cell[][] celulas, int qtdCellX, int qtdCellY) {
+    public DFS(Cell[][] celulas) {
         this.celulas = celulas;
-        this.qtdCellX = qtdCellX;
-        this.qtdCellY = qtdCellY;
     }
 
     public Cell[][] getCelulas() {

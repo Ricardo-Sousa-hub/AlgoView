@@ -24,24 +24,63 @@ public class Maze extends JPanel implements Printable {
     private MazeCreator mazeCreator;
     private DFS dfs;
     private BFS bfs;
+    private AStar aStar;
     private boolean isRunning;
     private boolean hasStartingPoint = false;
     private boolean hasEndPoint = false;
+
+    //teste
+    private ArrayList<Cell> celulasCorrectPath = new ArrayList<>();
 
     private int startX = -1;
     private int startY = -1;
     private int endX = -1;
     private int endY = -1;
     private int delay;
+    private double posXStart;
+    private double posYStart;
+    private double posXEnd;
+    private double posYEnd;
+
+
     public Maze(){
         setPreferredSize(new Dimension(1001, 601));
         setBackground(Color.WHITE);
-        preencherLbirinto();
+        preencherLabirinto();
         mazeCreator = new MazeCreator(celulas, qtdCellX);
-        dfs = new DFS(celulas, qtdCellX, qtdCellY);
-        bfs = new BFS(celulas, qtdCellX, qtdCellY);
+        dfs = new DFS(celulas);
+        bfs = new BFS(celulas);
+        aStar = new AStar(celulas);
 
         isRunning = false;
+    }
+
+    public void aStarAlgorithm(){
+        isRunning = true;
+        aStar.setStartX(startX);
+        aStar.setStartY(startY);
+        aStar.setEndX(endX);
+        aStar.setEndY(endY);
+        aStar.setPosEndX(posXEnd);
+        aStar.setPosEndY(posYEnd);
+        aStar.reset();
+
+        Timer aStarTimer = new Timer(delay, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(celulasCorrect() || !isRunning){
+                    isRunning = false;
+                    ((Timer)e.getSource()).stop();
+                }
+                else {
+                    if(isRunning){
+                        celulas = aStar.startMazeSolver();
+                    }
+                }
+                repaint();
+            }
+        });
+        aStarTimer.start();
     }
 
     public void dfsAlgorithm(){
@@ -105,12 +144,15 @@ public class Maze extends JPanel implements Printable {
                 case "BFS":
                     bfsAlgorithm();
                     break;
+                case "AStar":
+                    aStarAlgorithm();
+                    break;
             }
         }
 
     }
 
-    public void preencherLbirinto(){
+    public void preencherLabirinto(){
         hasStartingPoint = false;
         hasEndPoint = false;
         int posX = 0;
@@ -242,6 +284,8 @@ public class Maze extends JPanel implements Printable {
         for (int y = 0; y < qtdCellY; y++){
             for (int x = 0; x < qtdCellX; x++){
                 if(celulas[y][x].contains(posX, posY) && !celulas[y][x].isEnd()){
+                    posXStart = posX;
+                    posYStart = posY;
                     startX = x;
                     startY = y;
                     celulas[y][x].setStart(true);
@@ -267,6 +311,8 @@ public class Maze extends JPanel implements Printable {
             for (int x = 0; x < qtdCellX; x++){
                 if(celulas[y][x].contains(posX, posY) && !celulas[y][x].isStart()){
                     celulas[y][x].setEnd(true);
+                    posXEnd = posX;
+                    posYEnd = posY;
                     endX = x;
                     endY = y;
                     repaint();
@@ -330,6 +376,9 @@ public class Maze extends JPanel implements Printable {
     }
 
     public void setDelay(int delay) {
+        if(delay <= 0){
+            delay = 50;
+        }
         this.delay = delay;
     }
 }
